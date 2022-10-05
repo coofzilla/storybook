@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import { satisfies } from '@storybook/semver';
 import stripJsonComments from 'strip-json-comments';
 
-import { SupportedRenderers, SupportedLanguage } from './project_types';
+import { SupportedFrameworks, SupportedRenderers, SupportedLanguage } from './project_types';
 import { JsPackageManager, PackageJson, PackageJsonWithDepsAndDevDeps } from './js-package-manager';
 import { getBaseDir } from './dirs';
 import storybookMonorepoPackages from './versions';
@@ -181,7 +181,10 @@ export function copyTemplate(templateRoot: string) {
   fse.copySync(templateDir, '.', { overwrite: true });
 }
 
-export async function copyComponents(renderer: SupportedRenderers, language: SupportedLanguage) {
+export async function copyComponents(
+  renderer: SupportedFrameworks | SupportedRenderers,
+  language: SupportedLanguage
+) {
   const languageFolderMapping: Record<SupportedLanguage, string> = {
     javascript: 'js',
     typescript: 'ts',
@@ -213,9 +216,7 @@ export async function copyComponents(renderer: SupportedRenderers, language: Sup
 
   const destinationPath = await targetPath();
   await fse.copy(await componentsPath(), destinationPath, { overwrite: true });
-  await fse.copy(join(getBaseDir(), 'rendererAssets/common'), destinationPath, {
-    overwrite: true,
-  });
+  await fse.copy(join(getBaseDir(), 'rendererAssets/common'), destinationPath);
 }
 
 // Given a package.json, finds any official storybook package within it
